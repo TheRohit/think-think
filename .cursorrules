@@ -2,61 +2,62 @@ Next.js Best Practices:
 
 Utilize Next.js App Router for improved performance and better routing
 Implement proper error boundaries to handle and display errors gracefully
-Use suspense for data fetching to improve user experience and performance
-Leverage Next.js built-in optimizations like code splitting and image optimization
-Implement server-side rendering or static generation where appropriate for SEO benefits
-Use Next.js API routes for server-side logic to keep the frontend clean and secure
+Use server components for data fetching to reduce client-side JavaScript
+Leverage Next.js built-in image optimization for faster page loads
+Implement proper data fetching patterns using suspense and concurrent rendering
+Use Next.js static generation and server-side rendering appropriately based on content freshness needs
 
 React Best Practices:
 
 Use functional components and hooks instead of class components for better code organization
-Implement proper use of React.memo and useMemo for performance optimization
-Follow the React hooks rules strictly to avoid common pitfalls and bugs
-Utilize context API or state management libraries for global state management
+Implement proper React memo and useMemo for performance optimization
+Follow the React hooks rules strictly to avoid common pitfalls
+Utilize React.lazy and Suspense for code-splitting and lazy loading of components
 Implement proper prop type validation using PropTypes or TypeScript for better type safety
-Use React.lazy and Suspense for code-splitting and lazy loading of components
+Use context API or state management libraries for managing global state effectively
 
-TypeScript Practices:
+TypeScript Best Practices:
 
-Use TypeScript strict mode for better type safety and to catch potential errors early
+Use TypeScript strict mode for better type safety and catching potential errors
 Follow proper type definitions and use interfaces and types appropriately
 Implement comprehensive error handling using TypeScript's type system
-Utilize type guards and discriminated unions for more robust type checking
-Use generics for creating reusable components and functions with type safety
-Leverage TypeScript's module resolution and path mapping for better project organization
+Utilize type guards and discriminated unions for runtime type checking
+Leverage TypeScript's utility types for more expressive and reusable code
+Use enums or union types instead of magic strings or numbers for better maintainability
 
 Drizzle ORM Best Practices:
 
 Use prepared statements to prevent SQL injection attacks
-Implement proper transaction management for database operations
-Utilize Drizzle's type-safe query builder for better code maintainability and performance
+Implement proper transaction management for data consistency
+Utilize Drizzle's query builder for type-safe and efficient database operations
+Leverage Drizzle's migration system for version control of your database schema
 Implement proper error handling and logging for database operations
-Use Drizzle's migration system for version control of your database schema
-Optimize database queries using Drizzle's query optimization features
+Use Drizzle's connection pooling for better performance in production environments
 
 Zod Best Practices:
 
 Use Zod for runtime type checking and validation of user inputs
-Implement proper error handling and user feedback for validation errors
-Utilize Zod's type inference to generate TypeScript types from your schemas
-Use Zod's built-in validation methods for common data types and patterns
-Implement custom validation rules using Zod's extensible API
-Use Zod with other libraries like React Hook Form for seamless form validation
+Implement proper error handling and user-friendly error messages for validation failures
+Utilize Zod's inferred types with TypeScript for better type safety and autocompletion
+Leverage Zod's built-in parsing and coercion features for handling different input formats
+Use Zod's custom validation methods for complex business logic validation
+Implement Zod schemas for API request/response validation to ensure data integrity
 
-Postgres Best Practices:
+Tailwind CSS Best Practices:
 
-Implement proper connection pooling to manage database connections efficiently
-Use parameterized queries to prevent SQL injection attacks
-Implement proper indexing strategy for improved query performance
-Utilize transactions for maintaining data integrity in multi-step operations
-Implement proper error handling and logging for database operations
-Regularly monitor and optimize database performance using appropriate tools and techniques
+Use utility-first approach for consistent and maintainable styling
+Implement proper responsive design using Tailwind's responsive modifiers
+Utilize Tailwind's custom theme configuration for consistent design across the application
+Leverage Tailwind's JIT mode for faster build times and smaller CSS output
+Implement proper accessibility practices using Tailwind's accessibility utilities
+Use Tailwind's @apply directive for component-level styling and better code organization
 
-General Standards:
+General Best Practices:
 
-Keep components small and focused for better maintainability and reusability
-Follow proper state management patterns to avoid prop drilling and improve performance
-Implement proper testing practices, including unit tests, integration tests, and end-to-end tests
-Use ESLint and Prettier for consistent code style and to catch potential errors early
+Keep components small and focused on a single responsibility
+Follow proper state management patterns based on application complexity
+Implement proper testing practices including unit tests, integration tests, and end-to-end tests
+Use environment variables for configuration and sensitive information
 Implement proper error handling and logging throughout the application
-Regularly update dependencies to ensure you have the latest security patches and features
+Follow semantic versioning for your project and its dependencies
+Regularly update dependencies to ensure security and performance improvements
