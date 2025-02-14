@@ -1,0 +1,62 @@
+Next.js Best Practices:
+
+Utilize Next.js App Router for improved performance and better routing
+Implement proper error boundaries to handle and display errors gracefully
+Use suspense for data fetching to improve user experience and performance
+Leverage Next.js built-in optimizations like code splitting and image optimization
+Implement server-side rendering or static generation where appropriate for SEO benefits
+Use Next.js API routes for server-side logic to keep the frontend clean and secure
+
+React Best Practices:
+
+Use functional components and hooks instead of class components for better code organization
+Implement proper use of React.memo and useMemo for performance optimization
+Follow the React hooks rules strictly to avoid common pitfalls and bugs
+Utilize context API or state management libraries for global state management
+Implement proper prop type validation using PropTypes or TypeScript for better type safety
+Use React.lazy and Suspense for code-splitting and lazy loading of components
+
+TypeScript Practices:
+
+Use TypeScript strict mode for better type safety and to catch potential errors early
+Follow proper type definitions and use interfaces and types appropriately
+Implement comprehensive error handling using TypeScript's type system
+Utilize type guards and discriminated unions for more robust type checking
+Use generics for creating reusable components and functions with type safety
+Leverage TypeScript's module resolution and path mapping for better project organization
+
+Drizzle ORM Best Practices:
+
+Use prepared statements to prevent SQL injection attacks
+Implement proper transaction management for database operations
+Utilize Drizzle's type-safe query builder for better code maintainability and performance
+Implement proper error handling and logging for database operations
+Use Drizzle's migration system for version control of your database schema
+Optimize database queries using Drizzle's query optimization features
+
+Zod Best Practices:
+
+Use Zod for runtime type checking and validation of user inputs
+Implement proper error handling and user feedback for validation errors
+Utilize Zod's type inference to generate TypeScript types from your schemas
+Use Zod's built-in validation methods for common data types and patterns
+Implement custom validation rules using Zod's extensible API
+Use Zod with other libraries like React Hook Form for seamless form validation
+
+Postgres Best Practices:
+
+Implement proper connection pooling to manage database connections efficiently
+Use parameterized queries to prevent SQL injection attacks
+Implement proper indexing strategy for improved query performance
+Utilize transactions for maintaining data integrity in multi-step operations
+Implement proper error handling and logging for database operations
+Regularly monitor and optimize database performance using appropriate tools and techniques
+
+General Standards:
+
+Keep components small and focused for better maintainability and reusability
+Follow proper state management patterns to avoid prop drilling and improve performance
+Implement proper testing practices, including unit tests, integration tests, and end-to-end tests
+Use ESLint and Prettier for consistent code style and to catch potential errors early
+Implement proper error handling and logging throughout the application
+Regularly update dependencies to ensure you have the latest security patches and features
