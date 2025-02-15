@@ -25,6 +25,7 @@
     "@clerk/nextjs": "^6.11.3",
     "@hookform/resolvers": "^4.1.0",
     "@neondatabase/serverless": "^0.10.4",
+    "@pinecone-database/pinecone": "^5.0.0",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@t3-oss/env-nextjs": "^0.10.1",
@@ -44,6 +45,7 @@
     "react-hook-form": "^7.54.2",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {

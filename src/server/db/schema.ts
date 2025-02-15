@@ -1,4 +1,4 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -58,3 +58,27 @@ export const authSchema = {
 };
 
 export type AuthSchema = typeof authSchema;
+
+// Content type enum
+export const contentType = ["note", "youtube", "pdf", "link"] as const;
+
+// Base content table
+export const content = pgTable("content", {
+  id: text("id").primaryKey(),
+  type: text("type", { enum: contentType }).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  content: jsonb("content").notNull(), // Stores the type-specific content
+  tags: text("tags").array().default([]),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Export the complete schema
+export const schema = {
+  ...authSchema,
+  content,
+};
+
+export type Schema = typeof schema;
