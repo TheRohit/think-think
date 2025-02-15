@@ -1,26 +1,33 @@
+"use server";
+
+import { headers } from "next/headers";
 import { useCallback } from "react";
 import { auth } from "~/lib/auth";
-import type { AuthUser, CustomSession } from "~/lib/auth";
 
-export function useAuth() {
-  const signOut = useCallback(async () => {
-    await auth.signOut();
-  }, []);
+export async function useAuth() {
+  const signOut = async () => {
+    await auth.api.signOut({ headers: await headers() });
+  };
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    await auth.signIn({ email, password });
-  }, []);
+  const signIn = async (email: string, password: string) => {
+    await auth.api.signInEmail({
+      headers: await headers(),
+      body: { email, password },
+    });
+  };
 
-  const signUp = useCallback(
-    async (email: string, password: string, name: string) => {
-      await auth.signUp({ email, password, name });
-    },
-    [],
-  );
+  const signUp = async (email: string, password: string, name: string) => {
+    await auth.api.signUpEmail({
+      headers: await headers(),
+      body: { email, password, name },
+    });
+  };
 
-  const signInWithGoogle = useCallback(async () => {
-    await auth.signInWithGoogle();
-  }, []);
+  const signInWithGoogle = async () =>
+    await auth.api.signInSocial({
+      headers: await headers(),
+      body: { provider: "google" },
+    });
 
   return {
     signIn,

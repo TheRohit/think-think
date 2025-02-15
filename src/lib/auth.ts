@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { db } from "~/server/db";
+import type { Session } from "better-auth/types";
 import { env } from "~/env";
-import type { Session, User } from "better-auth/types";
+import { db } from "~/server/db";
 
 export type AuthUser = {
   id: string;
@@ -32,11 +32,6 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
-  },
   emailAndPassword: {
     enabled: true,
     verifyEmail: false,
@@ -53,43 +48,7 @@ export const auth = betterAuth({
       max: 5, // limit each IP to 5 requests per windowMs
     },
   },
-  callbacks: {
-    async session({
-      session,
-      user,
-    }: {
-      session: Session;
-      user: User;
-    }): Promise<CustomSession> {
-      return {
-        ...session,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name ?? null,
-          image: user.image ?? null,
-        },
-      };
-    },
-    async jwt({
-      token,
-      user,
-    }: {
-      token: CustomToken;
-      user?: User;
-    }): Promise<CustomToken> {
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
-          email: user.email,
-          name: user.name ?? undefined,
-          picture: user.image ?? undefined,
-        };
-      }
-      return token;
-    },
-  },
+
   pages: {
     signIn: "/auth/signin",
     signUp: "/auth/signup",

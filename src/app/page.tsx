@@ -1,25 +1,42 @@
-import { headers } from "next/headers";
+"use client";
+
+import { useAction } from "next-safe-action/hooks";
+import { generateAction } from "~/actions/generate";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import { auth } from "~/lib/auth";
 
-export default async function HomePage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export default function HomePage() {
+  const { executeAsync: generate, isPending: isGeneratingPending } = useAction(
+    generateAction,
+    {
+      onSuccess: (data) => {
+        if (data.data) {
+          console.log(data.data);
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    },
+  );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-900 text-white">
+    <main className="flex h-full flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-4xl font-bold">
-          Welcome to the AI-powered something {session?.user?.name}
+          Welcome to the AI-powered something
         </h1>
         <Textarea
           placeholder="Enter your text here"
           className="w-full max-w-md"
         />
 
-        <Button variant={"secondary"}>Generate</Button>
+        <Button
+          onClick={() => generate({ prompt: "write a poem about a cat" })}
+          variant={"secondary"}
+        >
+          Generate
+        </Button>
       </div>
     </main>
   );
