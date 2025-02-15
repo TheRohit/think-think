@@ -15,6 +15,13 @@
       "when": 1739620209351,
       "tag": "0001_mature_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739645715742,
+      "tag": "0002_perfect_maddog",
+      "breakpoints": true
     }
   ]
 }

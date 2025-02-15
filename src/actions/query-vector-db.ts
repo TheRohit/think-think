@@ -1,5 +1,6 @@
 "use server";
 
+import "server-only";
 import { z } from "zod";
 import { pinecone } from "~/lib/pinecone";
 import { authActionClient } from "~/lib/safe-action";

@@ -1,4 +1,11 @@
-import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -64,7 +71,7 @@ export const contentType = ["note", "youtube", "pdf", "link"] as const;
 
 // Base content table
 export const content = pgTable("content", {
-  id: text("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   type: text("type", { enum: contentType }).notNull(),
   userId: text("user_id")
     .notNull()

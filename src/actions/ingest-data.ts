@@ -1,129 +1,89 @@
 "use server";
 
-import { z } from "zod";
+import "server-only";
 import { pinecone } from "~/lib/pinecone";
 import { authActionClient } from "~/lib/safe-action";
-import { v4 as uuidv4 } from "uuid";
-
-// Base schema for common fields across all content types
-const baseVectorSchema = z.object({
-  id: z
-    .string()
-    .uuid()
-    .default(() => uuidv4()),
-  text: z.string().min(1, "Embedding text cannot be empty"), // Main text for embedding
-});
-
-// Schema for plain text notes
-const noteVectorSchema = baseVectorSchema.extend({
-  type: z.literal("note"),
-  metadata: z
-    .object({
-      title: z.string().optional(),
-      tags: z.array(z.string()).default([]),
-    })
-    .optional(),
-});
-
-// Schema for YouTube links
-const youtubeVectorSchema = baseVectorSchema.extend({
-  type: z.literal("youtube"),
-  metadata: z
-    .object({
-      url: z
-        .string()
-        .url()
-        .refine(
-          (url) => url.includes("youtube.com") || url.includes("youtu.be"),
-          "Must be a valid YouTube URL",
-        ),
-      title: z.string().min(1, "Title is required"),
-      description: z.string().optional(),
-    })
-    .optional(),
-});
-
-// Schema for PDF documents
-const pdfVectorSchema = baseVectorSchema.extend({
-  type: z.literal("pdf"),
-  metadata: z
-    .object({
-      fileName: z.string().min(1, "File name is required"),
-      pageNumber: z.number().positive().optional(),
-      totalPages: z.number().positive().optional(),
-    })
-    .optional(),
-});
-
-// Schema for web links/bookmarks
-const linkVectorSchema = baseVectorSchema.extend({
-  type: z.literal("link"),
-  metadata: z
-    .object({
-      url: z.string().url(),
-      title: z.string().min(1, "Title is required"),
-      description: z.string().optional(),
-    })
-    .optional(),
-});
-
-// Combined schema using discriminated union
-const vectorContentSchema = z.discriminatedUnion("type", [
-  noteVectorSchema,
-  youtubeVectorSchema,
-  pdfVectorSchema,
-  linkVectorSchema,
-]);
-
-// Schema for the input array
-const schema = z.object({
-  data: z.array(vectorContentSchema),
-});
-
-// Infer TypeScript types from the schema
-type VectorContent = z.infer<typeof vectorContentSchema>;
-type VectorContentInput = z.input<typeof vectorContentSchema>;
+import { ingestSchema } from "~/schema/ingest-schema";
+import { db } from "~/server/db";
+import { content } from "~/server/db/schema";
 
 export const ingestData = authActionClient
   .metadata({ actionName: "ingest-data" })
-  .schema(schema)
+  .schema(ingestSchema)
   .action(async ({ parsedInput, ctx }) => {
     const { data } = parsedInput;
     const { userId } = ctx;
 
-    const model = "multilingual-e5-large";
+    try {
+      const dbRecords = await Promise.all(
+        data.map(async (item) => {
+          const contentData = {
+            type: item.type,
+            userId,
+            content: {
+              text: item.text,
+              ...item.metadata,
+            },
+            tags: item.tags,
+          };
 
-    const embeddings = await pinecone.inference.embed(
-      model,
-      data.map((d) => d.text),
-      {
-        inputType: "passage",
-        truncate: "END",
-      },
-    );
+          const [inserted] = await db
+            .insert(content)
+            .values(contentData)
+            .returning();
 
-    const index = pinecone.index("multilingual-e5-large");
+          if (!inserted) {
+            throw new Error("Failed to insert content");
+          }
 
-    const records = data.map((d, i) => ({
-      id: d.id,
-      values: (embeddings[i] as unknown as { values: number[] }).values,
-      metadata: {
-        text: d.text,
-        userId,
-        type: d.type,
-        createdAt: new Date().toISOString(),
-        ...d.metadata,
-      },
-    }));
+          return inserted;
+        }),
+      );
 
-    await index.upsert(records);
+      console.log(dbRecords);
+      console.log("saved to db");
 
-    return {
-      success: true,
-      count: records.length,
-    };
+      const model = "multilingual-e5-large";
+
+      const embeddings = await pinecone.inference.embed(
+        model,
+        dbRecords.map((record) => (record.content as { text: string }).text),
+        {
+          inputType: "passage",
+          truncate: "END",
+        },
+      );
+
+      const index = pinecone.index("multilingual-e5-large");
+
+      const vectorRecords = dbRecords.map((record, i) => ({
+        id: record.id,
+        values: (embeddings[i] as unknown as { values: number[] }).values,
+        metadata: {
+          text: (record.content as { text: string }).text,
+          userId,
+          type: record.type,
+          createdAt: record.createdAt.toISOString(),
+          dbId: record.id,
+          ...(record.content as Record<string, unknown>),
+        },
+      }));
+
+      await index.upsert(vectorRecords);
+
+      console.log("saved to vector db");
+
+      return {
+        success: true,
+        data: dbRecords,
+        vectorCount: vectorRecords.length,
+      };
+    } catch (error) {
+      console.error("Error ingesting data:", error);
+      throw new Error(
+        error instanceof Error
+          ? `Failed to ingest data: ${error.message}`
+          : "Failed to ingest data",
+      );
+    }
   });
-
-// Export types and schemas for use in other parts of the application
-export type { VectorContent, VectorContentInput };
-export { vectorContentSchema };
