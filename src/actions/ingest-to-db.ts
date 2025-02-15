@@ -5,7 +5,6 @@ import { authActionClient } from "~/lib/safe-action";
 import { db } from "~/server/db";
 import { content } from "~/server/db/schema";
 
-// Base schema for common fields across all content types
 const baseContentSchema = z.object({
   id: z.string().uuid(),
   createdAt: z.date().default(() => new Date()),
@@ -14,7 +13,6 @@ const baseContentSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-// Schema for plain text notes
 const noteSchema = baseContentSchema.extend({
   type: z.literal("note"),
   content: z.object({
@@ -22,7 +20,6 @@ const noteSchema = baseContentSchema.extend({
   }),
 });
 
-// Schema for YouTube links
 const youtubeSchema = baseContentSchema.extend({
   type: z.literal("youtube"),
   content: z.object({
@@ -38,7 +35,6 @@ const youtubeSchema = baseContentSchema.extend({
   }),
 });
 
-// Schema for PDF documents
 const pdfSchema = baseContentSchema.extend({
   type: z.literal("pdf"),
   content: z.object({
@@ -50,7 +46,6 @@ const pdfSchema = baseContentSchema.extend({
   }),
 });
 
-// Schema for web links/bookmarks
 const linkSchema = baseContentSchema.extend({
   type: z.literal("link"),
   content: z.object({
@@ -61,7 +56,6 @@ const linkSchema = baseContentSchema.extend({
   }),
 });
 
-// Combined schema using discriminated union
 const contentSchema = z.discriminatedUnion("type", [
   noteSchema,
   youtubeSchema,
@@ -69,12 +63,10 @@ const contentSchema = z.discriminatedUnion("type", [
   linkSchema,
 ]);
 
-// Schema for the input array
 const schema = z.object({
   data: z.array(contentSchema),
 });
 
-// Infer TypeScript types from the schema
 type Content = z.infer<typeof contentSchema>;
 type ContentInput = z.input<typeof contentSchema>;
 
@@ -122,6 +114,5 @@ export const ingestData = authActionClient
     }
   });
 
-// Export types and schemas for use in other parts of the application
 export { contentSchema };
 export type { Content, ContentInput };
