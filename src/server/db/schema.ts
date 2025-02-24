@@ -87,5 +87,5 @@ export const schema = {
   ...authSchema,
   content,
 };
-
+export type Content = typeof content.$inferSelect;
 export type Schema = typeof schema;

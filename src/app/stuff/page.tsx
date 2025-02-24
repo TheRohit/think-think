@@ -2,10 +2,12 @@
 
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { generateTitleAction } from "~/actions/generate-title";
 import { ingestData } from "~/actions/ingest-data";
 import { queryVectorDb } from "~/actions/query-vector-db";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
+import { fetchTweet } from "react-tweet/api";
 
 export default function StuffPage() {
   const [queryText, setQueryText] = useState("");
@@ -37,6 +39,19 @@ export default function StuffPage() {
     },
   );
 
+  const {
+    executeAsync: generateTitle,
+    isPending: isGeneratingTitlePending,
+    result,
+  } = useAction(generateTitleAction, {
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
   return (
     <div className="flex flex-col gap-4 p-4">
       <Textarea
@@ -47,12 +62,14 @@ export default function StuffPage() {
       />
       <div>
         <Button
-          isLoading={isQueryingPending}
-          onClick={() => query({ query: queryText })}
+          isLoading={isGeneratingTitlePending}
+          onClick={() => generateTitle({ context: queryText })}
         >
-          Query
+          Generate Title
         </Button>
       </div>
+
+      {result && <p>{result.data}</p>}
 
       {isQueryingPending && <p>Querying...</p>}
     </div>

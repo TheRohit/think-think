@@ -15,6 +15,7 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string().url(),
     GEMINI_API_KEY: z.string(),
     PINECONE_API_KEY: z.string(),
+    GROQ_API_KEY: z.string(),
   },
 
   /**
@@ -37,6 +38,7 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     PINECONE_API_KEY: process.env.PINECONE_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

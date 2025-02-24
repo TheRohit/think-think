@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import type { Session } from "better-auth/types";
+import { headers } from "next/headers";
 import { env } from "~/env";
 import { db } from "~/server/db";
 
@@ -57,3 +58,10 @@ export const auth = betterAuth({
   },
   plugins: [nextCookies()],
 });
+
+export async function getSession() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  return session;
+}
