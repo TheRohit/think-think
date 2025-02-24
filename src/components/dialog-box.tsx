@@ -7,18 +7,18 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 
-import { ScrollArea } from "./ui/scroll-area";
-
 const DialogBox = ({
   children,
   title,
   description,
-  text,
+
+  content,
 }: {
   children: React.ReactNode;
   title: string;
   description: string;
-  text?: string;
+
+  content?: React.ReactNode;
 }) => {
   return (
     <Dialog>
@@ -29,9 +29,7 @@ const DialogBox = ({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-full w-full rounded-base border-2 border-border bg-main p-2 text-mtext shadow-shadow">
-          {text}
-        </ScrollArea>
+        {content}
       </DialogContent>
     </Dialog>
   );

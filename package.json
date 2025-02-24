@@ -34,6 +34,7 @@
     "@radix-ui/react-toast": "^1.2.6",
     "@t3-oss/env-nextjs": "^0.10.1",
     "ai": "^4.1.40",
+    "babel-plugin-react-compiler": "^19.0.0-beta-e1e972c-20250221",
     "better-auth": "^1.1.18",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

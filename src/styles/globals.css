@@ -28,6 +28,7 @@
   --noise-pattern: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='10' numOctaves='3' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='1.00 1.00'/%3E%3CfeFuncG type='table' tableValues='1.00 1.00'/%3E%3CfeFuncB type='table' tableValues='1.00 1.00'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
   --gradient-1: radial-gradient(circle at 94% 36%, #df51e9 0px, transparent 40%);
   --gradient-2: radial-gradient(circle at 56% 94%, #7f90ec 0px, transparent 40%);
+  --dots-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' viewBox='0 0 200 200' width='20' height='20'%3E%3Cg stroke-width='2' stroke='hsl(261, 60%25, 38%25)' fill='none'%3E%3Ccircle r='12' cx='0' cy='0' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='100' cy='0' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='200' cy='0' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='0' cy='100' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='100' cy='100' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='200' cy='100' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='0' cy='200' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='100' cy='200' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3Ccircle r='12' cx='200' cy='200' fill='hsl(261, 60%25, 38%25)' stroke='none' opacity='0.35'%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");
 }
 
 .dark {
@@ -47,9 +48,11 @@
 
 @layer base {
   body {
-    background: var(--noise-pattern), var(--gradient-1), var(--gradient-2);
+    background-image: var(--dots-pattern), var(--noise-pattern), var(--gradient-1), var(--gradient-2);
     background-color: var(--bw);
-    background-position: center;
+    background-position: 0 0, center, center, center;
+    background-size: 20px 20px, cover, cover, cover;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
   }
 }
 
@@ -61,5 +64,6 @@
     @apply bg-background text-foreground;
   }
 } */
+
 
 

@@ -30,7 +30,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toaster />
-          <div className="grid h-screen grid-rows-[auto,1fr] font-[family-name:var(--font-geist-sans)] dark:bg-zinc-950">
+          <div className="grid h-screen grid-rows-[auto,1fr] font-[family-name:var(--font-geist-sans)]">
             <MainNav />
             <main className="h-[calc(100vh-64px)] overflow-y-scroll">
               {children}
