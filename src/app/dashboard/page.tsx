@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import NotesCard from "~/components/notes-card";
 import { getSession } from "~/lib/auth";
-import { getContentByUserId } from "~/server/db/queries";
 import type {
   LinkContent,
   NoteContent,
@@ -16,23 +16,47 @@ export default async function Dashboard() {
     redirect("/auth/signin");
   }
 
-  const data = await getContentByUserId(session.user.id);
+  // const data = await getContentByUserId(session.user.id);
+
+  const data = [
+    {
+      id: "1",
+      type: "note",
+      content: {
+        title: "My Note",
+        description: "This is a description",
+        text: "Jokester began sneaking into the castle in the middle of the night and leaving jokes all over the place: under the king&apos;s pillow, in his soup, even in the royal toilet. The king was furious, but he couldn&apos;t seem to stop Jokester. And then, one day, the people of the kingdom discovered that the jokes left by Jokester were so funny that they couldn&apos;t help but laugh. And once they started laughing, they couldn&apos;t stop.",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    },
+    {
+      id: "2",
+      type: "youtube",
+      content: {
+        title: "My YouTube",
+        url: "https://www.youtube.com",
+        description: "This is a description",
+      },
+    },
+  ];
 
   return (
-    <div className="flex h-full flex-col items-center justify-center p-4">
+    <div className="flex h-full flex-col justify-center p-4">
       <Suspense fallback={<div>Loading...</div>}>
         <div className="flex flex-col gap-4">
           {data.map((item) => {
             return (
-              <div key={item.id} className="rounded-lg border p-4 shadow-sm">
+              <div key={item.id} className="rounded-lg p-4 shadow-sm">
                 {item.type === "note" && (
                   <div>
-                    {(item.content as NoteContent).title && (
+                    {/* {(item.content as NoteContent).title && (
                       <h3 className="mb-2 font-semibold">
                         {(item.content as NoteContent).title}
                       </h3>
                     )}
-                    <p>{(item.content as NoteContent).text}</p>
+                    <p>{(item.content as NoteContent).text}</p> */}
+                    <NotesCard note={item.content as NoteContent} />
                   </div>
                 )}
                 {item.type === "youtube" && (
@@ -68,13 +92,13 @@ export default async function Dashboard() {
                     >
                       View PDF
                     </a>
-                    {(item.content as PdfContent).pageNumber &&
+                    {/* {(item.content as PdfContent).pageNumber &&
                       (item.content as PdfContent).totalPages && (
                         <p className="mt-2 text-sm text-gray-500">
                           Page {(item.content as PdfContent).pageNumber} of{" "}
                           {(item.content as PdfContent).totalPages}
                         </p>
-                      )}
+                      )} */}
                   </div>
                 )}
                 {item.type === "link" && (
