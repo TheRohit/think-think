@@ -1,14 +1,19 @@
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
+"use client";
 
+import { useRouter } from "next/navigation";
+import { Button } from "~/components/ui/button";
+import { authClient } from "~/lib/auth-client";
 import { cn } from "~/lib/utils";
 
 export function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
+  const router = useRouter();
+  const session = authClient.useSession();
+
   return (
-    <div className="flex h-16 items-center bg-zinc-950 px-4">
+    <div className="flex h-16 items-center px-4">
       <nav
         className={cn(
           "mx-6 flex items-center space-x-4 lg:space-x-6",
@@ -41,9 +46,25 @@ export function MainNav({
           Settings
         </Link> */}
       </nav>
-      <div className="ml-auto flex items-center space-x-4">
-        <Button variant={"secondary"}>Sign out</Button>
-      </div>
+      {session.data && (
+        <div className="ml-auto flex items-center space-x-4">
+          <Button
+            className="z-10 gap-2"
+            variant="neutral"
+            onClick={async () => {
+              await authClient.signOut({
+                fetchOptions: {
+                  onSuccess: () => {
+                    router.push("/");
+                  },
+                },
+              });
+            }}
+          >
+            Sign out
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

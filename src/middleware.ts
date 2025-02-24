@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth";
 
@@ -11,16 +12,19 @@ export async function middleware(request: NextRequest) {
     "/auth/error",
     "/auth/verify-request",
   ];
-  const isPublicPath = publicPaths.some((path) =>
+
+  // Modified logic to handle homepage separately
+  const isAuthPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path),
   );
+  const isHomePage = request.nextUrl.pathname === "/";
 
-  if (!sessionCookie && !isPublicPath) {
+  if (!sessionCookie && !isAuthPath && !isHomePage) {
     // Redirect to signin page if trying to access protected route without session
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
-  if (sessionCookie && isPublicPath) {
+  if (sessionCookie && isAuthPath) {
     // Redirect to home page if trying to access auth pages with active session
     return NextResponse.redirect(new URL("/", request.url));
   }
