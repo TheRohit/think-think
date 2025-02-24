@@ -54,6 +54,11 @@
     background-size: 20px 20px, cover, cover, cover;
     background-repeat: repeat, repeat, no-repeat, no-repeat;
   }
+  .text-shadow-neo {
+    text-shadow: 3px 3px #0f172a;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #0f172a;
+  }
 }
 
 /* @layer base {

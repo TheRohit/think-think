@@ -1,19 +1,22 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
-import { authClient } from "~/lib/auth-client";
+import { auth } from "~/lib/auth";
 import { cn } from "~/lib/utils";
 
-export function MainNav({
+export async function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const router = useRouter();
-  const session = authClient.useSession();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   return (
     <div className="flex h-16 items-center px-4">
+      <h1 className="border-4 border-black bg-green-400 px-4 py-2 text-2xl font-black uppercase tracking-tight shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-pink-500">
+        MindCache
+      </h1>
       <nav
         className={cn(
           "mx-6 flex items-center space-x-4 lg:space-x-6",
@@ -46,19 +49,17 @@ export function MainNav({
           Settings
         </Link> */}
       </nav>
-      {session.data && (
+      {session?.user && (
         <div className="ml-auto flex items-center space-x-4">
           <Button
             className="z-10 gap-2"
             variant="neutral"
             onClick={async () => {
-              await authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => {
-                    router.push("/");
-                  },
-                },
+              "use server";
+              await auth.api.signOut({
+                headers: await headers(),
               });
+              redirect("/dashboard");
             }}
           >
             Sign out

@@ -1,16 +1,16 @@
 "use client";
 
-import { cn } from "~/lib/utils";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import HoloImage from "public/hhholographic-img.webp";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import Image from "next/image";
-import HoloImage from "public/hhholographic-img.webp";
-import { useState } from "react";
 import { authClient } from "~/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { cn } from "~/lib/utils";
+
 import { toast } from "~/hooks/use-toast";
 
 export function LoginForm({
@@ -62,7 +62,7 @@ export function LoginForm({
   ) => {
     await authClient.signIn.social({
       provider,
-      callbackURL: "/",
+      callbackURL: "/dashboard",
     });
   };
 
@@ -123,6 +123,7 @@ export function LoginForm({
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <Button
+                  disabled
                   type="button"
                   variant="neutral"
                   className="w-full"
@@ -151,6 +152,7 @@ export function LoginForm({
                   <span className="sr-only">Login with Google</span>
                 </Button>
                 <Button
+                  disabled
                   type="button"
                   variant="neutral"
                   className="w-full"
