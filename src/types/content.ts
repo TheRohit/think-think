@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const noteContent = z.object({
   text: z.string(),
-  title: z.string().optional(),
+  title: z.string(),
+  description: z.string(), // TODO: update schema
 });
 
 export const youtubeContent = z.object({

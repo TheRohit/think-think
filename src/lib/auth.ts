@@ -39,6 +39,13 @@ export const auth = betterAuth({
     passwordMinLength: 8,
     passwordMaxLength: 100,
   },
+  socialProviders: {
+    google: {
+      enabled: true,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    },
+  },
 
   security: {
     passwordHash: {
