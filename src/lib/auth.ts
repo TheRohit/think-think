@@ -5,6 +5,7 @@ import type { Session } from "better-auth/types";
 import { headers } from "next/headers";
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { passkey } from "better-auth/plugins/passkey";
 
 export type AuthUser = {
   id: string;
@@ -63,7 +64,7 @@ export const auth = betterAuth({
     error: "/auth/error",
     verifyRequest: "/auth/verify-request",
   },
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), passkey()],
 });
 
 export async function getSession() {
