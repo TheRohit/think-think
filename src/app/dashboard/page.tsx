@@ -21,7 +21,7 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="flex w-full flex-col items-center gap-28 px-4 py-6 sm:px-6 sm:py-10">
+    <div className="flex w-full flex-col items-center gap-28 px-4 py-24 sm:px-6 sm:py-12">
       <div className="flex w-full flex-col items-center gap-8">
         <h1 className="text-shadow-neo scroll-m-20 text-4xl font-extrabold tracking-tight text-orange-400 lg:text-5xl">
           {getGreeting()},{" "}

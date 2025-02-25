@@ -46,7 +46,7 @@ export default function NotesSection() {
       </div>
 
       <div id="notes-section" className="w-full p-4">
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap justify-center gap-4 sm:justify-start">
           {data.map((item) => {
             return (
               <div key={item.id} className="rounded-lg p-4 shadow-sm">
