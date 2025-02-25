@@ -41,6 +41,9 @@ export default async function Dashboard() {
     );
   } catch (error) {
     console.error("Dashboard session error:", error);
+    await auth.api.revokeSessions({
+      headers: await headers(),
+    });
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <div className="rounded-lg border-2 border-black bg-red-100 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -48,7 +51,6 @@ export default async function Dashboard() {
           <p>
             There was a problem with your session. Please try signing in again.
           </p>
-          <ClearSessionButton />
         </div>
       </div>
     );
