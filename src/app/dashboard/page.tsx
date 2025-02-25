@@ -3,6 +3,7 @@ import InputField from "~/components/input-field";
 import NotesSection from "~/components/notes-section";
 import { auth } from "~/lib/auth";
 import { redirect } from "next/navigation";
+import ClearSessionButton from "~/components/clear-session-button";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -47,12 +48,7 @@ export default async function Dashboard() {
           <p>
             There was a problem with your session. Please try signing in again.
           </p>
-          <a
-            href="/auth/signin"
-            className="mt-4 inline-block rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            Sign In
-          </a>
+          <ClearSessionButton />
         </div>
       </div>
     );
