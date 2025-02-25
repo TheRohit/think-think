@@ -12,6 +12,8 @@ import { authClient } from "~/lib/auth-client";
 import { cn } from "~/lib/utils";
 
 import { toast } from "~/hooks/use-toast";
+import { Key } from "lucide-react";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -169,6 +171,31 @@ export function LoginForm({
                   <span className="sr-only">Login with Meta</span>
                 </Button>
               </div>
+              <Button
+                type="button"
+                variant="neutral"
+                className="gap-2"
+                onClick={async () => {
+                  await authClient.signIn.passkey({
+                    fetchOptions: {
+                      onSuccess() {
+                        router.push("/dashboard");
+                        revalidatePath("/dashboard");
+                      },
+                      onError(context) {
+                        toast({
+                          title: "Error",
+                          description: context.error.message,
+                          variant: "destructive",
+                        });
+                      },
+                    },
+                  });
+                }}
+              >
+                <Key size={16} />
+                Sign-in with Passkey
+              </Button>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <a href="#" className="underline underline-offset-4">
@@ -183,15 +210,12 @@ export function LoginForm({
               height={2000}
               src={HoloImage}
               alt="Image"
+              priority
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
           </div>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground hover:[&_a]:text-primary text-balance text-center text-xs [&_a]:underline [&_a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </div>
     </div>
   );
 }

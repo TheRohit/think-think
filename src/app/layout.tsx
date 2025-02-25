@@ -1,11 +1,10 @@
 import "~/styles/globals.css";
 
-import { type Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { MainNav } from "./components/main-nav";
-import { ThemeProvider } from "./components/theme-provider";
+import { GeistSans } from "geist/font/sans";
+import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
+import { ThemeProvider } from "./components/theme-provider";
 
 export const metadata: Metadata = {
   title: "MindCache",
@@ -31,10 +30,7 @@ export default function RootLayout({
         >
           <Toaster />
           <div className="grid h-screen grid-rows-[auto,1fr] font-[family-name:var(--font-geist-sans)]">
-            <MainNav />
-            <main className="h-[calc(100vh-64px)] overflow-y-scroll">
-              {children}
-            </main>
+            {children}
           </div>
         </ThemeProvider>
       </body>
