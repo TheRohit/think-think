@@ -1,9 +1,8 @@
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import InputField from "~/components/input-field";
 import NotesSection from "~/components/notes-section";
 import { auth } from "~/lib/auth";
-import { redirect } from "next/navigation";
-import ClearSessionButton from "~/components/clear-session-button";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -13,13 +12,15 @@ function getGreeting() {
   return "Good Evening";
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user) {
+    if (!session) {
       redirect("/auth/signin");
     }
 
@@ -39,11 +40,7 @@ export default async function Dashboard() {
         </div>
       </div>
     );
-  } catch (error) {
-    console.error("Dashboard session error:", error);
-    await auth.api.revokeSessions({
-      headers: await headers(),
-    });
+  } catch {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <div className="rounded-lg border-2 border-black bg-red-100 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
