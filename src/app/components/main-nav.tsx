@@ -5,8 +5,6 @@ import { Button } from "~/components/ui/button";
 import { auth } from "~/lib/auth";
 import { cn } from "~/lib/utils";
 
-export const dynamic = "force-dynamic";
-
 export async function MainNav({
   className,
   ...props

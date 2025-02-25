@@ -15,8 +15,6 @@ import { toast } from "~/hooks/use-toast";
 import { Key } from "lucide-react";
 import { revalidatePath } from "next/cache";
 
-export const dynamic = "force-dynamic";
-
 export function LoginForm({
   className,
   ...props
