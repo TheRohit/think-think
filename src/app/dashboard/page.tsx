@@ -12,8 +12,6 @@ function getGreeting() {
   return "Good Evening";
 }
 
-export const dynamic = "force-dynamic";
-
 export default async function Dashboard() {
   try {
     const session = await auth.api.getSession({
@@ -41,6 +39,9 @@ export default async function Dashboard() {
       </div>
     );
   } catch {
+    await auth.api.signOut({
+      headers: await headers(),
+    });
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <div className="rounded-lg border-2 border-black bg-red-100 p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
