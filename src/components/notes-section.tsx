@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsDownIcon } from "lucide-react";
-import type { LinkContent, PdfContent } from "~/types/content";
+import type { LinkContent } from "~/types/content";
 import NotesCard from "./notes-card";
 import type { NoteContent, YoutubeContent } from "~/types/content";
 import YoutubeCard from "./youtube-card";
@@ -66,28 +66,7 @@ export default function NotesSection() {
                     <YoutubeCard content={item.content as YoutubeContent} />
                   </div>
                 )}
-                {item.type === "pdf" && (
-                  <div>
-                    <h3 className="mb-2 font-semibold">
-                      {(item.content as PdfContent).fileName}
-                    </h3>
-                    <a
-                      href={(item.content as PdfContent).url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      View PDF
-                    </a>
-                    {/* {(item.content as PdfContent).pageNumber &&
-                      (item.content as PdfContent).totalPages && (
-                        <p className="mt-2 text-sm text-gray-500">
-                          Page {(item.content as PdfContent).pageNumber} of{" "}
-                          {(item.content as PdfContent).totalPages}
-                        </p>
-                      )} */}
-                  </div>
-                )}
+
                 {item.type === "link" && (
                   <div>
                     <h3 className="mb-2 font-semibold">
