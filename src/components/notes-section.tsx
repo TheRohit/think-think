@@ -29,14 +29,23 @@ const data = [
 ];
 
 export default function NotesSection() {
+  const handleScroll = () => {
+    document.getElementById("notes-section")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div className="w-full">
-      <div className="flex w-full flex-col items-center py-8">
-        <ChevronsDownIcon className="h-10 w-10" />
-        <h1>Scroll down to see your notes</h1>
+      <div
+        className="flex w-full cursor-pointer flex-col items-center py-8"
+        onClick={handleScroll}
+      >
+        <ChevronsDownIcon className="h-10 w-10 animate-bounce" />
+        <h1 className="text-md font-medium">Scroll down to see your notes</h1>
       </div>
 
-      <div className="w-full p-4">
+      <div id="notes-section" className="w-full p-4">
         <div className="flex flex-wrap gap-4">
           {data.map((item) => {
             return (

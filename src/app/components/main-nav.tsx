@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Button } from "~/components/ui/button";
+import { ThemeToggle } from "~/components/ui/theme-toggle";
 import { auth } from "~/lib/auth";
 import { cn } from "~/lib/utils";
 
@@ -15,7 +16,7 @@ export async function MainNav({
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex h-16 items-center px-4">
+      <div className="flex h-16 items-center justify-between px-4">
         <h1 className="border-4 border-black bg-green-400 px-4 py-2 text-2xl font-black uppercase tracking-tight shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-pink-500">
           MindCache
         </h1>
@@ -51,23 +52,26 @@ export async function MainNav({
         Settings
       </Link> */}
         </nav>
-        {session?.user && (
-          <div className="ml-auto flex items-center space-x-4">
-            <Button
-              className="z-10 gap-2"
-              variant="neutral"
-              onClick={async () => {
-                "use server";
-                await auth.api.signOut({
-                  headers: await headers(),
-                });
-                redirect("/dashboard");
-              }}
-            >
-              Sign out
-            </Button>
-          </div>
-        )}
+        <div className="flex items-center justify-end gap-4">
+          <ThemeToggle />
+          {session?.user && (
+            <div className="ml-auto flex items-center space-x-4">
+              <Button
+                className="z-10 gap-2"
+                variant="neutral"
+                onClick={async () => {
+                  "use server";
+                  await auth.api.signOut({
+                    headers: await headers(),
+                  });
+                  redirect("/dashboard");
+                }}
+              >
+                Sign out
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </Suspense>
   );
