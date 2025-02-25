@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import InputField from "~/components/input-field";
+import NotesSection from "~/components/notes-section";
 import { auth } from "~/lib/auth";
 
 function getGreeting() {
@@ -18,8 +19,9 @@ export default async function Dashboard() {
   if (!session) {
     return <div>Not authenticated</div>;
   }
+
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+    <div className="flex w-full flex-col items-center gap-8 py-10">
       <h1 className="text-shadow-neo scroll-m-20 text-4xl font-extrabold tracking-tight text-orange-400 lg:text-5xl">
         {getGreeting()},{" "}
         <span className="text-[#51b8ff]">
@@ -27,6 +29,9 @@ export default async function Dashboard() {
         </span>
       </h1>
       <InputField />
+      <div className="w-full">
+        <NotesSection />
+      </div>
     </div>
   );
 }
