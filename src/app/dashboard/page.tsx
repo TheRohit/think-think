@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import InputField from "~/components/input-field";
 import NotesSection from "~/components/notes-section";
 import { auth } from "~/lib/auth";
-import IngestModal from "../components/ingest-modal";
+import IngestModal from "../components/ingest/ingest-modal";
 
 function getGreeting() {
   const hour = new Date().getHours();

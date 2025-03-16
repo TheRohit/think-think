@@ -24,11 +24,18 @@ export const queryVectorDb = authActionClient
         inputType: "query",
       });
 
+      const embedding = embeddings.data[0];
+      if (!embedding || embedding.vectorType !== "dense") {
+        throw new Error(
+          `Expected dense embedding at index ${0}, but got ${embedding?.vectorType ?? "undefined"}`,
+        );
+      }
+
       const index = pinecone.index("multilingual-e5-large");
 
       const queryResponse = await index.query({
         topK: limit,
-        vector: (embeddings[0] as unknown as { values: number[] }).values,
+        vector: embedding.values,
         includeValues: false,
         includeMetadata: true,
         filter: {

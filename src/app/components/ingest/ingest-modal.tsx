@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, Link, Plus, Upload } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import DialogBox from "~/components/dialog-box";
 import { Button } from "~/components/ui/button";
@@ -17,6 +18,9 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Textarea } from "~/components/ui/textarea";
+
+import type { ContentType, LinkPreviewResponse } from "~/types/link-preview";
+import { YouTubeCard } from "./youtube-card";
 
 interface WebsiteTabProps {
   url: string;
@@ -46,6 +50,95 @@ export default function IngestModal() {
 }
 
 const WebsiteTab = ({ url, setUrl }: WebsiteTabProps) => {
+  const [metadata, setMetadata] = useState<{
+    title?: string;
+    image?: string;
+    description?: string;
+    type?: ContentType;
+  }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const getMetadata = async () => {
+    if (!url) {
+      setError("Please enter a URL");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError("");
+
+      // Encode the URL to handle special characters
+      const encodedUrl = encodeURIComponent(url);
+
+      // Call the API route as GET
+      const response = await fetch(`/api/link-preview?url=${encodedUrl}`);
+
+      const result = (await response.json()) as LinkPreviewResponse;
+
+      if (!result.success) {
+        if (result.validationErrors?.url?._errors) {
+          // Handle validation errors specifically
+          setError(
+            result.validationErrors.url._errors[0] ?? "Invalid URL format",
+          );
+        } else {
+          setError(result.error ?? "Failed to fetch metadata");
+        }
+      } else if (result.data) {
+        setMetadata({
+          title: result.data.title,
+          image: result.data.image,
+          description: result.data.description,
+          type: result.data.type,
+        });
+        console.log("Link preview data:", result.data);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
+      console.error("Error fetching link preview:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const WebsiteCard = () => {
+    if (!metadata.title || (metadata.type && metadata.type === "youtube"))
+      return null;
+
+    return (
+      <div className="rounded-md bg-gray-50 p-3 dark:bg-gray-800/50">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">Title: {metadata.title}</p>
+            {metadata.type && (
+              <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                Website
+              </span>
+            )}
+          </div>
+          {metadata.description && (
+            <p className="line-clamp-2 text-xs text-gray-500">
+              {metadata.description}
+            </p>
+          )}
+          {metadata.image && (
+            <div className="mt-2 justify-center overflow-hidden rounded-md align-middle">
+              <Image
+                src={metadata.image}
+                alt={metadata.title || "Preview"}
+                className="h-auto max-h-32 w-full object-cover"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -65,9 +158,43 @@ const WebsiteTab = ({ url, setUrl }: WebsiteTabProps) => {
             className="w-full"
           />
         </div>
+
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
+        {metadata && (
+          <>
+            {metadata.type === "youtube" &&
+            metadata.title &&
+            metadata.description ? (
+              <YouTubeCard
+                metadata={{
+                  title: metadata.title,
+                  description: metadata.description,
+                  image: metadata.image,
+                  type: metadata.type,
+                }}
+              />
+            ) : (
+              <WebsiteCard />
+            )}
+          </>
+        )}
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button>Add Website</Button>
+        <Button
+          onClick={getMetadata}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+              Loading...
+            </>
+          ) : (
+            "Get Metadata"
+          )}
+        </Button>
       </CardFooter>
     </Card>
   );

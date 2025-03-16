@@ -11,6 +11,9 @@ const config = {
       {
         hostname: "img.youtube.com",
       },
+      {
+        hostname: "i.ytimg.com",
+      },
     ],
   },
   experimental: {
