@@ -1,3 +1,4 @@
+import { cn } from "~/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -11,19 +12,21 @@ const DialogBox = ({
   children,
   title,
   description,
+  className,
 
   content,
 }: {
   children: React.ReactNode;
   title: string;
   description: string;
+  className?: React.ComponentProps<typeof DialogContent>["className"];
 
   content?: React.ReactNode;
 }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-full">
+      <DialogContent className={cn("w-full", className)}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

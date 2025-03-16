@@ -13,7 +13,6 @@ import { cn } from "~/lib/utils";
 
 import { toast } from "~/hooks/use-toast";
 import { Key } from "lucide-react";
-import { revalidatePath } from "next/cache";
 
 export function LoginForm({
   className,
@@ -178,7 +177,6 @@ export function LoginForm({
                     fetchOptions: {
                       onSuccess() {
                         router.push("/dashboard");
-                        revalidatePath("/dashboard");
                       },
                       onError(context) {
                         toast({
