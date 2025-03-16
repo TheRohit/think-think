@@ -11,11 +11,9 @@ export async function GET(
   request: Request,
 ): Promise<NextResponse<LinkPreviewResponse>> {
   try {
-    // Get URL from query parameters
     const { searchParams } = new URL(request.url);
     const url = searchParams.get("url");
 
-    // Validate the URL
     const result = urlSchema.safeParse({ url });
 
     if (!result.success) {
@@ -38,6 +36,7 @@ export async function GET(
     const contentType = getContentType(validUrl);
 
     const metadata = await getLinkPreview(validUrl, {
+      followRedirects: "follow",
       timeout: 5000,
       headers: {
         "user-agent":

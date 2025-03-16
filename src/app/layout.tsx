@@ -5,6 +5,7 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "./components/theme-provider";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "MindCache",
@@ -28,10 +29,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster />
-          <div className="grid h-screen grid-rows-[auto,1fr] font-[family-name:var(--font-geist-sans)]">
-            {children}
-          </div>
+          <Providers>
+            <Toaster />
+            <div className="grid h-screen grid-rows-[auto,1fr] font-[family-name:var(--font-geist-sans)]">
+              {children}
+            </div>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>
