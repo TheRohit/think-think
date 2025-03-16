@@ -56,18 +56,28 @@ export const ingestData = authActionClient
 
       const index = pinecone.index("multilingual-e5-large");
 
-      const vectorRecords = dbRecords.map((record, i) => ({
-        id: record.id,
-        values: (embeddings[i] as unknown as { values: number[] }).values,
-        metadata: {
-          text: (record.content as { text: string }).text,
-          userId,
-          type: record.type,
-          createdAt: record.createdAt.toISOString(),
-          dbId: record.id,
-          ...(record.content as Record<string, unknown>),
-        },
-      }));
+      const vectorRecords = dbRecords.map((record, i) => {
+        // Ensure the embedding exists and is a dense embedding
+        const embedding = embeddings.data[i];
+        if (!embedding || embedding.vectorType !== "dense") {
+          throw new Error(
+            `Expected dense embedding at index ${i}, but got ${embedding?.vectorType ?? "undefined"}`,
+          );
+        }
+
+        return {
+          id: record.id,
+          values: embedding.values,
+          metadata: {
+            text: (record.content as { text: string }).text,
+            userId,
+            type: record.type,
+            createdAt: record.createdAt.toISOString(),
+            dbId: record.id,
+            ...(record.content as Record<string, unknown>),
+          },
+        };
+      });
 
       await index.upsert(vectorRecords);
 
