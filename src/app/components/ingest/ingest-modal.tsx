@@ -2,8 +2,6 @@
 "use client";
 
 import { FileText, Link, Plus, Upload } from "lucide-react";
-import { useState, useRef } from "react";
-import { debounce } from "lodash";
 import DialogBox from "~/components/dialog-box";
 import { Button } from "~/components/ui/button";
 import {
@@ -15,13 +13,11 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { DialogClose } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Textarea } from "~/components/ui/textarea";
 
-import useLinkPreview from "./ingest.queries";
-import { YouTubeCard } from "./youtube-card";
+import { WebsiteTab } from "./website-tab";
 
 export default function IngestModal() {
   return (
@@ -42,98 +38,6 @@ export default function IngestModal() {
     </div>
   );
 }
-
-const WebsiteTab = () => {
-  const [url, setUrl] = useState("");
-  const [debouncedUrl, setDebouncedUrl] = useState("");
-
-  const debouncedSetUrlRef = useRef(
-    debounce((value: string) => {
-      setDebouncedUrl(value);
-    }, 500),
-  );
-
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newUrl = e.target.value;
-    setUrl(newUrl);
-    debouncedSetUrlRef.current(newUrl);
-  };
-
-  const { data, isLoading, isError, error } = useLinkPreview(debouncedUrl);
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Website or Tweet URL</CardTitle>
-        <CardDescription>
-          Add a website or tweet URL to your diary
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="url">URL</Label>
-          <Input
-            id="url"
-            placeholder="https://www.google.com"
-            value={url}
-            onChange={handleUrlChange}
-            className="w-full"
-          />
-        </div>
-
-        {isLoading && <div>Loading...</div>}
-        {isError && <div>Error: {error.message}</div>}
-
-        {data && (
-          <>
-            {data.type === "youtube" && data.title && data.description ? (
-              <YouTubeCard
-                metadata={{
-                  title: data.title,
-                  description: data.description,
-                  image: data.image,
-                  type: data.type,
-                }}
-              />
-            ) : (
-              <div className="rounded-md bg-gray-50 p-3 dark:bg-gray-800/50">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{data.title}</p>
-                    {data.type && (
-                      <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                        Website
-                      </span>
-                    )}
-                  </div>
-                  {data.description && (
-                    <p className="line-clamp-2 text-xs text-gray-500">
-                      {data.description}
-                    </p>
-                  )}
-                  {data.image && (
-                    <div className="mt-2 justify-center overflow-hidden rounded-md align-middle">
-                      <img
-                        width={100}
-                        height={100}
-                        src={data.image}
-                        alt={data.title || "Preview"}
-                        className="h-auto max-h-32 w-full object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-        <CardFooter className="flex justify-end">
-          <Button disabled={!data}>Add Memory</Button>
-        </CardFooter>
-      </CardContent>
-    </Card>
-  );
-};
 
 const NoteTab = () => {
   return (

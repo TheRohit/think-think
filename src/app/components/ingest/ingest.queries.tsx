@@ -21,8 +21,7 @@ const useLinkPreview = (queryUrl: string) => {
       }
       return result.data;
     },
-    enabled: !!queryUrl,
-    refetchOnWindowFocus: false,
+    enabled: false,
   });
 };
 
