@@ -27,15 +27,18 @@ import {
 } from "react-tweet";
 import { fetchTweetAction } from "~/actions/fetch-tweet";
 import { ingestTweetAction } from "~/actions/ingest-tweets";
+import { ingestWebsiteAction } from "~/actions/ingest-website";
 import { YouTubeCard } from "./youtube-card";
 
-export const WebsiteTab = () => {
+export const WebsiteTab = ({ close }: { close: () => void }) => {
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
   const [tweetDisplayId, setTweetDisplayId] = useState<string | null>(null);
   const [tweet, setTweet] = useState<EnrichedTweet | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useLinkPreview(url);
+
+  console.log(data);
 
   const request = debounce(async () => {
     await refetch();
@@ -45,26 +48,33 @@ export const WebsiteTab = () => {
     await request();
   }, [request]);
 
-  const {
-    executeAsync: fetchTweet,
-    isPending: isFetchingTweetPending,
-    result,
-  } = useAction(fetchTweetAction, {
-    onSuccess: (data) => {
-      if (data.data) {
-        const tweet = enrichTweet(data.data);
-        setTweet(tweet);
-      }
-    },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
+  const { executeAsync: fetchTweet, isPending: isFetchingTweetPending } =
+    useAction(fetchTweetAction, {
+      onSuccess: (data) => {
+        if (data.data) {
+          const tweet = enrichTweet(data.data);
+          setTweet(tweet);
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
 
   const { executeAsync: ingestTweet, isPending: isIngestingTweetPending } =
     useAction(ingestTweetAction, {
       onSuccess: (data) => {
         console.log("ingested tweet", data);
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+
+  const { executeAsync: ingestWebsite, isPending: isIngestingWebsitePending } =
+    useAction(ingestWebsiteAction, {
+      onSuccess: (data) => {
+        console.log("ingested website", data);
       },
       onError: (error) => {
         console.error(error);
@@ -81,6 +91,18 @@ export const WebsiteTab = () => {
       setUrl(e.target.value);
       setTweetDisplayId(null);
       await debounceRequest();
+    }
+  };
+
+  const handleIngest = async () => {
+    if (tweetDisplayId && tweet) {
+      await ingestTweet({ tweet });
+      close();
+    } else if (data) {
+      await ingestWebsite({ website: data });
+      close();
+    } else {
+      console.log("no content to ingest");
     }
   };
 
@@ -165,13 +187,9 @@ export const WebsiteTab = () => {
         )}
         <CardFooter className="flex justify-end">
           <Button
-            onClick={async () => {
-              if (result.data) {
-                await ingestTweet({ tweet: result?.data });
-              }
-            }}
-            isLoading={isIngestingTweetPending}
-            // disabled={!data || !tweetDisplayId}
+            onClick={handleIngest}
+            isLoading={isIngestingTweetPending || isIngestingWebsitePending}
+            disabled={!data && tweetDisplayId === null}
           >
             Add Memory
           </Button>

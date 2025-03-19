@@ -17,16 +17,21 @@ import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Textarea } from "~/components/ui/textarea";
 
+import { useDisclosure } from "~/hooks/use-disclosure";
 import { WebsiteTab } from "./website-tab";
 
 export default function IngestModal() {
+  const [opened, { close, toggle }] = useDisclosure();
+
   return (
     <div>
       <DialogBox
+        open={opened}
+        onOpenChange={toggle}
         className="max-w-2xl"
         title="Add Memory"
         description="Add a link, tweet, note, document, or import from integrations to your memories"
-        content={<Content />}
+        content={<Content close={close} />}
       >
         <Button
           variant="noShadow"
@@ -122,14 +127,14 @@ const TabTriggers = () => {
 };
 
 // Content Component
-const Content = () => {
+const Content = ({ close }: { close: () => void }) => {
   return (
     <div className="flex flex-col gap-6">
       <Tabs defaultValue="website" className="w-full">
         <TabTriggers />
 
         <TabsContent value="website">
-          <WebsiteTab />
+          <WebsiteTab close={close} />
         </TabsContent>
 
         <TabsContent value="note">

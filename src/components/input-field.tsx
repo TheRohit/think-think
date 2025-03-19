@@ -1,11 +1,26 @@
 "use client";
 
+import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { queryVectorDb } from "~/actions/query-vector-db";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
 export default function InputField() {
   const [input, setInput] = useState("");
+  const { executeAsync: query, isPending: isQueryingPending } = useAction(
+    queryVectorDb,
+    {
+      onSuccess: (data) => {
+        if (data.data) {
+          console.log(data.data);
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    },
+  );
 
   return (
     <div className="focus-within:ring-primary relative flex w-full flex-col gap-2 rounded-lg border-2 border-black bg-zinc-100 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:border-sky-400 dark:bg-zinc-900/80 dark:shadow-[4px_4px_0px_0px_rgba(56,189,248,0.8)] dark:hover:shadow-[2px_2px_0px_0px_rgba(56,189,248,0.8)] sm:p-4 md:w-3/4 lg:w-1/2">
@@ -19,7 +34,12 @@ export default function InputField() {
         onChange={(e) => setInput(e.target.value)}
       />
       <div className="relative flex flex-row justify-end gap-2">
-        <Button className="text-sm dark:bg-sky-500 dark:text-white dark:hover:bg-sky-400 sm:text-base">
+        <Button
+          isLoading={isQueryingPending}
+          disabled={input.length === 0}
+          onClick={async () => await query({ query: input })}
+          className="text-sm dark:bg-sky-500 dark:text-white dark:hover:bg-sky-400 sm:text-base"
+        >
           Search
         </Button>
       </div>

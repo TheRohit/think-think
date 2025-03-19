@@ -1,10 +1,11 @@
 import { Tweet } from "react-tweet/api";
 import { z } from "zod";
+import { ProcessedContent } from "~/lib/content-ingestion";
 
 /**
  * Extracts the most relevant information from a tweet for RAG retrieval
  */
-export function mapTweetForIngestion(tweet: Tweet) {
+export function mapTweetForIngestion(tweet: Tweet): ProcessedContent {
   const plainText = tweet.text.replace(/https:\/\/t\.co\/\w+/g, "").trim();
 
   const photoUrls = (tweet.photos ?? []).map((photo) => photo.url);

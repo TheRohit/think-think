@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import InputField from "~/components/input-field";
 import NotesSection from "~/components/notes-section";
 import { auth } from "~/lib/auth";
+import { getContentByUserId } from "~/server/db/queries";
 import IngestModal from "../components/ingest/ingest-modal";
 
 function getGreeting() {
@@ -20,6 +21,8 @@ export default async function Dashboard() {
   if (!session) {
     redirect("/auth/signin");
   }
+  const data = await getContentByUserId(session.user.id);
+  console.log(data);
 
   return (
     <div className="flex w-full flex-col items-center gap-28 px-4 py-24 sm:px-6 sm:py-12">
@@ -32,6 +35,11 @@ export default async function Dashboard() {
         </h1>
         <InputField />
         <IngestModal />
+        <div className="flex flex-col gap-4">
+          {data.map((item) => {
+            return <div key={item.id}>{item.type}</div>;
+          })}
+        </div>
       </div>
       <div className="w-full">
         <NotesSection />
