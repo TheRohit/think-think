@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { LinkPreviewResponse } from "~/types/link-preview";
 
-const useLinkPreview = (queryUrl: string) => {
+export const useLinkPreview = (queryUrl: string) => {
   return useQuery({
     queryKey: ["linkPreview", queryUrl],
     queryFn: async () => {
@@ -24,5 +24,3 @@ const useLinkPreview = (queryUrl: string) => {
     enabled: false,
   });
 };
-
-export default useLinkPreview;

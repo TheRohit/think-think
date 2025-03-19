@@ -1,22 +1,38 @@
 /* eslint-disable @next/next/no-img-element */
-import { CardContent, CardFooter } from "~/components/ui/card";
-
 import { debounce } from "lodash";
 import { useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Card,
+  CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import useLinkPreview from "./ingest.queries";
+import { useLinkPreview } from "./ingest.queries";
+
+import { useAction } from "next-safe-action/hooks";
+import {
+  EnrichedTweet,
+  enrichTweet,
+  TweetBody,
+  TweetContainer,
+  TweetHeader,
+  TweetInfo,
+  TweetMedia,
+  TweetSkeleton,
+} from "react-tweet";
+import { fetchTweetAction } from "~/actions/fetch-tweet";
 import { YouTubeCard } from "./youtube-card";
 
 export const WebsiteTab = () => {
+  const [text, setText] = useState("");
   const [url, setUrl] = useState("");
+  const [tweetDisplayId, setTweetDisplayId] = useState<string | null>(null);
+  const [tweet, setTweet] = useState<EnrichedTweet | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useLinkPreview(url);
 
@@ -28,9 +44,30 @@ export const WebsiteTab = () => {
     await request();
   }, [request]);
 
+  const { executeAsync: fetchTweet, isPending: isFetchingTweetPending } =
+    useAction(fetchTweetAction, {
+      onSuccess: (data) => {
+        if (data.data) {
+          const tweet = enrichTweet(data.data);
+          setTweet(tweet);
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(e.target.value);
-    await debounceRequest();
+    setText(e.target.value);
+    const { tweetId, isTweet } = getTweetId(e.target.value);
+    if (isTweet && tweetId) {
+      setTweetDisplayId(tweetId);
+      await fetchTweet({ tweetId });
+    } else {
+      setUrl(e.target.value);
+      setTweetDisplayId(null);
+      await debounceRequest();
+    }
   };
 
   return (
@@ -45,9 +82,9 @@ export const WebsiteTab = () => {
         <div className="space-y-2">
           <Label htmlFor="url">URL</Label>
           <Input
-            id="url"
+            id="text"
             placeholder="https://www.google.com"
-            value={url}
+            value={text}
             onChange={handleInputChange}
             className="w-full"
           />
@@ -55,6 +92,19 @@ export const WebsiteTab = () => {
 
         {isLoading && <div>Loading...</div>}
         {isError && <div>Error: {error.message}</div>}
+        <div>
+          {isFetchingTweetPending && <TweetSkeleton />}
+          {tweetDisplayId && !isFetchingTweetPending && tweet && (
+            <TweetContainer>
+              <TweetHeader tweet={tweet} />
+              <TweetBody tweet={tweet} />
+              {tweet?.mediaDetails?.length ? (
+                <TweetMedia tweet={tweet} />
+              ) : null}
+              <TweetInfo tweet={tweet} />
+            </TweetContainer>
+          )}
+        </div>
 
         {data && (
           <>
@@ -105,4 +155,15 @@ export const WebsiteTab = () => {
       </CardContent>
     </Card>
   );
+};
+
+export const getTweetId = (url: string) => {
+  // Strict regex to match only twitter.com and x.com domains with status URLs
+  const regex =
+    /^(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\/[^/]+\/status\/(\d+)/i;
+  const tweetIdMatch = regex.exec(url);
+  return {
+    tweetId: tweetIdMatch?.[1],
+    isTweet: !!tweetIdMatch,
+  };
 };
