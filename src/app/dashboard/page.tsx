@@ -1,10 +1,11 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import InputField from "~/components/input-field";
-import NotesSection from "~/components/notes-section";
+
 import { auth } from "~/lib/auth";
 import { getContentByUserId } from "~/server/db/queries";
 import IngestModal from "../components/ingest/ingest-modal";
+import ContentCard from "~/components/content-card";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -21,6 +22,7 @@ export default async function Dashboard() {
   if (!session) {
     redirect("/auth/signin");
   }
+
   const data = await getContentByUserId(session.user.id);
 
   return (
@@ -34,15 +36,18 @@ export default async function Dashboard() {
         </h1>
         <InputField />
         <IngestModal />
-        <div className="flex flex-col gap-4">
-          {data.map((item) => {
-            return <div key={item.id}>{item.type}</div>;
-          })}
+
+        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {data.map((item) => (
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            <ContentCard key={item.id} item={item} />
+          ))}
         </div>
       </div>
-      <div className="w-full">
+      {/* <div className="w-full">
         <NotesSection />
-      </div>
+      </div> */}
     </div>
   );
 }
