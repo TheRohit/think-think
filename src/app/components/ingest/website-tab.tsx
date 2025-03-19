@@ -28,6 +28,7 @@ import {
 import { fetchTweetAction } from "~/actions/fetch-tweet";
 import { ingestTweetAction } from "~/actions/ingest-tweets";
 import { ingestWebsiteAction } from "~/actions/ingest-website";
+import { toast } from "~/hooks/use-toast";
 import { YouTubeCard } from "./youtube-card";
 
 export const WebsiteTab = ({ close }: { close: () => void }) => {
@@ -63,21 +64,37 @@ export const WebsiteTab = ({ close }: { close: () => void }) => {
 
   const { executeAsync: ingestTweet, isPending: isIngestingTweetPending } =
     useAction(ingestTweetAction, {
-      onSuccess: (data) => {
-        console.log("ingested tweet", data);
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "Tweet added successfully",
+        });
       },
       onError: (error) => {
-        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description:
+            error instanceof Error ? error.message : "Failed to add tweet",
+        });
       },
     });
 
   const { executeAsync: ingestWebsite, isPending: isIngestingWebsitePending } =
     useAction(ingestWebsiteAction, {
-      onSuccess: (data) => {
-        console.log("ingested website", data);
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "Link added successfully",
+        });
       },
       onError: (error) => {
-        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description:
+            error instanceof Error ? error.message : "Failed to add link",
+        });
       },
     });
 

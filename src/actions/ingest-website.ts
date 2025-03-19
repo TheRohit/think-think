@@ -8,7 +8,7 @@ import {
 } from "~/utils/website-mapper";
 import { ingestContent } from "~/lib/content-ingestion";
 import { LinkPreviewData } from "~/types/link-preview";
-
+import { revalidatePath } from "next/cache";
 export const ingestWebsiteAction = authActionClient
   .metadata({ actionName: "ingest-website" })
   .schema(websiteIngestionSchema)
@@ -20,7 +20,7 @@ export const ingestWebsiteAction = authActionClient
       const processedWebsite = mapWebsiteForIngestion(website);
 
       const inserted = await ingestContent(userId, processedWebsite);
-
+      revalidatePath("/dashboard");
       return {
         success: true,
         data: inserted,

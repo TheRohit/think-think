@@ -5,19 +5,22 @@ import { useState } from "react";
 import { queryVectorDb } from "~/actions/query-vector-db";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-
+import { toast } from "~/hooks/use-toast";
 export default function InputField() {
   const [input, setInput] = useState("");
   const { executeAsync: query, isPending: isQueryingPending } = useAction(
     queryVectorDb,
     {
-      onSuccess: (data) => {
-        if (data.data) {
-          console.log(data.data);
-        }
+      onSuccess: () => {
+        setInput("");
       },
       onError: (error) => {
-        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description:
+            error instanceof Error ? error.message : "Failed to add note",
+        });
       },
     },
   );

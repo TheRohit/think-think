@@ -22,7 +22,6 @@ export default async function Dashboard() {
     redirect("/auth/signin");
   }
   const data = await getContentByUserId(session.user.id);
-  console.log(data);
 
   return (
     <div className="flex w-full flex-col items-center gap-28 px-4 py-24 sm:px-6 sm:py-12">

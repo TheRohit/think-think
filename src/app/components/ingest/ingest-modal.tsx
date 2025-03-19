@@ -13,11 +13,10 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { DialogClose } from "~/components/ui/dialog";
-import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Textarea } from "~/components/ui/textarea";
 
 import { useDisclosure } from "~/hooks/use-disclosure";
+import NotesTab from "./notes-tab";
 import { WebsiteTab } from "./website-tab";
 
 export default function IngestModal() {
@@ -43,30 +42,6 @@ export default function IngestModal() {
     </div>
   );
 }
-
-const NoteTab = () => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add a Note</CardTitle>
-        <CardDescription>Write a note</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="note">Note Content</Label>
-          <Textarea
-            id="note"
-            placeholder="Write your note here..."
-            className="relative min-h-[120px] bg-white/20 backdrop-blur-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-900/30 sm:min-h-[200px]"
-          />
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button>Add Note</Button>
-      </CardFooter>
-    </Card>
-  );
-};
 
 const DocumentTab = () => {
   return (
@@ -138,7 +113,7 @@ const Content = ({ close }: { close: () => void }) => {
         </TabsContent>
 
         <TabsContent value="note">
-          <NoteTab />
+          <NotesTab close={close} />
         </TabsContent>
 
         <TabsContent value="document">

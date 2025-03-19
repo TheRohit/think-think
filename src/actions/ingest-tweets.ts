@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { Tweet } from "react-tweet/api";
 import "server-only";
 import { ingestContent } from "~/lib/content-ingestion";
@@ -20,6 +21,7 @@ export const ingestTweetAction = authActionClient
       const processedTweet = mapTweetForIngestion(tweet);
 
       const inserted = await ingestContent(userId, processedTweet);
+      revalidatePath("/dashboard");
 
       return {
         success: true,
