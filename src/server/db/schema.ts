@@ -83,7 +83,7 @@ export const authSchema = {
 export type AuthSchema = typeof authSchema;
 
 // Content type enum
-export const contentType = ["note", "youtube", "pdf", "link"] as const;
+export const contentType = ["note", "youtube", "pdf", "link", "tweet"] as const;
 
 // Base content table
 export const content = pgTable("content", {

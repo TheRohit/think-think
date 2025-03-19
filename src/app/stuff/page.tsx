@@ -7,7 +7,6 @@ import { ingestData } from "~/actions/ingest-data";
 import { queryVectorDb } from "~/actions/query-vector-db";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import { fetchTweet } from "react-tweet/api";
 
 export default function StuffPage() {
   const [queryText, setQueryText] = useState("");
@@ -63,7 +62,7 @@ export default function StuffPage() {
       <div>
         <Button
           isLoading={isGeneratingTitlePending}
-          onClick={() => generateTitle({ context: queryText })}
+          onClick={() => query({ query: queryText })}
         >
           Generate Title
         </Button>

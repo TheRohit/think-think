@@ -26,6 +26,7 @@ import {
   TweetSkeleton,
 } from "react-tweet";
 import { fetchTweetAction } from "~/actions/fetch-tweet";
+import { ingestTweetAction } from "~/actions/ingest-tweets";
 import { YouTubeCard } from "./youtube-card";
 
 export const WebsiteTab = () => {
@@ -44,13 +45,26 @@ export const WebsiteTab = () => {
     await request();
   }, [request]);
 
-  const { executeAsync: fetchTweet, isPending: isFetchingTweetPending } =
-    useAction(fetchTweetAction, {
+  const {
+    executeAsync: fetchTweet,
+    isPending: isFetchingTweetPending,
+    result,
+  } = useAction(fetchTweetAction, {
+    onSuccess: (data) => {
+      if (data.data) {
+        const tweet = enrichTweet(data.data);
+        setTweet(tweet);
+      }
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const { executeAsync: ingestTweet, isPending: isIngestingTweetPending } =
+    useAction(ingestTweetAction, {
       onSuccess: (data) => {
-        if (data.data) {
-          const tweet = enrichTweet(data.data);
-          setTweet(tweet);
-        }
+        console.log("ingested tweet", data);
       },
       onError: (error) => {
         console.error(error);
@@ -150,7 +164,17 @@ export const WebsiteTab = () => {
           </>
         )}
         <CardFooter className="flex justify-end">
-          <Button disabled={!data}>Add Memory</Button>
+          <Button
+            onClick={async () => {
+              if (result.data) {
+                await ingestTweet({ tweet: result?.data });
+              }
+            }}
+            isLoading={isIngestingTweetPending}
+            // disabled={!data || !tweetDisplayId}
+          >
+            Add Memory
+          </Button>
         </CardFooter>
       </CardContent>
     </Card>
