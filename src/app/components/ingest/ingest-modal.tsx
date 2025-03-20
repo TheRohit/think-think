@@ -27,7 +27,6 @@ export default function IngestModal() {
       <DialogBox
         open={opened}
         onOpenChange={toggle}
-        className="max-w-2xl"
         title="Add Memory"
         description="Add a link, tweet, note, document, or import from integrations to your memories"
         content={<Content close={close} />}
