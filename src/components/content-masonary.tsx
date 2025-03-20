@@ -3,11 +3,12 @@
 import { Filter, Grid, List, Search } from "lucide-react";
 import type { RenderComponentProps } from "masonic";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ContentCard from "~/components/content-card";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useIsMobile } from "~/hooks/is-mobile";
 import { cn } from "~/lib/utils";
 import { ContentItem } from "~/types/dashboard.types";
 
@@ -185,7 +186,8 @@ export default function ContentMasonry({
 }: {
   data?: ContentItem[];
 }) {
-  console.log("data", data.length);
+  const isMobile = useIsMobile();
+
   const [viewMode, setViewMode] = useState<ViewMode>("masonry");
   const [activeFilter, setActiveFilter] = useState<ContentType | "all">("all");
 
@@ -198,6 +200,10 @@ export default function ContentMasonry({
       ),
     [data, activeFilter],
   );
+
+  useEffect(() => {
+    setViewMode(isMobile ? "grid" : "masonry");
+  }, [isMobile]);
 
   if (data.length === 0) {
     return <EmptyState />;
@@ -240,6 +246,7 @@ export default function ContentMasonry({
       {viewMode === "masonry" ? (
         <div className="pb-8">
           <DynamicMasonry
+            scrollFps={24}
             key={`masonry-${filterChangeCount}-${activeFilter}-${data.length}`}
             items={filteredData}
             columnWidth={300}
@@ -250,7 +257,7 @@ export default function ContentMasonry({
             overscanBy={5}
             ssrWidth={1200}
             scrollToIndex={0}
-            itemHeightEstimate={350}
+            itemHeightEstimate={400}
             className="masonry-grid"
           />
         </div>

@@ -33,7 +33,7 @@ export default function DialogBox({
       <DialogTrigger asChild>
         <div className="cursor-pointer">{children}</div>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-hidden sm:max-w-[700px]">
+      <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
