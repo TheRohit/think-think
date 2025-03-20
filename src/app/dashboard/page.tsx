@@ -1,12 +1,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import InputField from "~/components/input-field";
-
-import ContentMasonry from "~/components/content-masonary";
+import SearchResultsSection from "~/components/search-results-section";
 import { auth } from "~/lib/auth";
 import { getContentByUserId } from "~/server/db/queries";
-import IngestModal from "../components/ingest/ingest-modal";
 import { ContentItem } from "~/types/dashboard.types";
+import IngestModal from "../components/ingest/ingest-modal";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -20,11 +18,13 @@ export default async function Dashboard() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
   if (!session) {
     redirect("/auth/signin");
   }
 
   const data = await getContentByUserId(session.user.id);
+
   return (
     <div className="flex w-full flex-col items-center gap-28 px-4 py-24 sm:px-6 sm:py-12">
       <div className="flex w-full flex-col items-center gap-8">
@@ -34,10 +34,8 @@ export default async function Dashboard() {
             {session.user.name.split(" ")[0]}
           </span>
         </h1>
-        <InputField />
-        <IngestModal />
 
-        <ContentMasonry data={data as ContentItem[]} />
+        <SearchResultsSection initialData={data as ContentItem[]} />
       </div>
     </div>
   );
