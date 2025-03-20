@@ -1,3 +1,5 @@
+import { ContentType } from "./link-preview";
+
 export interface LinkContent {
   url: string;
   title: string;
