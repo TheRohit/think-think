@@ -5,6 +5,7 @@ import { useState } from "react";
 import { generateTitleAction } from "~/actions/generate-title";
 import { ingestData } from "~/actions/ingest-data";
 import { queryVectorDb } from "~/actions/query-vector-db";
+import ContentMasonry from "~/components/content-masonary";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 
@@ -51,26 +52,5 @@ export default function StuffPage() {
     },
   });
 
-  return (
-    <div className="flex flex-col gap-4 p-4">
-      <Textarea
-        placeholder="What is the capital of France?"
-        className="h-96"
-        value={queryText}
-        onChange={(e) => setQueryText(e.target.value)}
-      />
-      <div>
-        <Button
-          isLoading={isGeneratingTitlePending}
-          onClick={() => query({ query: queryText })}
-        >
-          Generate Title
-        </Button>
-      </div>
-
-      {result && <p>{result.data}</p>}
-
-      {isQueryingPending && <p>Querying...</p>}
-    </div>
-  );
+  return <ContentMasonry />;
 }

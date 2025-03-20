@@ -15,7 +15,7 @@ export async function getContentById(id: string, userId: string) {
 
 export async function getContentByUserId(
   userId: string,
-  limit = 10,
+  limit = 100,
   offset = 0,
 ) {
   return await db
