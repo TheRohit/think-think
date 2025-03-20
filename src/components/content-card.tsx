@@ -1,15 +1,23 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { Calendar, Clock, FileText, Tag } from "lucide-react";
 import Link from "next/link";
-import DialogBox from "./dialog-box";
+
+import { YouTubeLogo } from "~/components/icons/youtube-logo";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { ScrollArea } from "./ui/scroll-area";
+} from "~/components/ui/card";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import DialogBox from "./dialog-box";
+import { ClientTweetCard } from "./magicui/client-tweet";
 
 // Helper function to format dates that can be either Date objects or strings
 const formatDate = (dateInput: Date | string): string => {
@@ -24,6 +32,27 @@ const formatDate = (dateInput: Date | string): string => {
     }).format(date);
   } catch {
     return "Unknown date";
+  }
+};
+
+// Helper function to format relative time
+const formatRelativeTime = (dateInput: Date | string): string => {
+  try {
+    const date =
+      typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
+
+    return formatDate(date);
+  } catch {
+    return "Unknown time";
   }
 };
 
@@ -81,6 +110,7 @@ export default function ContentCard({ item }: { item: ContentItemProps }) {
       return <LinkCard item={item} />;
     case "tweet":
       return <TweetCard item={item} />;
+
     case "note":
       return <NoteCard item={item} />;
     default:
@@ -92,41 +122,61 @@ function LinkCard({ item }: { item: ContentItemProps }) {
   const content = item.content as LinkContent;
 
   return (
-    <Card className="w-full overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="flex size-full max-w-lg flex-col gap-2 overflow-hidden rounded-lg border bg-transparent p-4 backdrop-blur-md">
       <Link href={content.url} target="_blank" className="block h-full">
-        <div className="flex flex-col gap-4 p-4 md:flex-row">
-          {content.image && (
-            <div className="relative h-40 overflow-hidden rounded-md md:h-36 md:w-48">
-              <img
-                src={content.image}
-                alt={content.title ?? "Link image"}
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-            </div>
-          )}
-          <div className="flex flex-1 flex-col">
-            <CardHeader className="p-0 pb-2">
-              <CardTitle className="line-clamp-2 text-lg font-bold">
-                {content.title ?? "Untitled Link"}
-              </CardTitle>
-              {content.siteName && (
-                <CardDescription className="text-sm text-zinc-800">
+        <div className="flex flex-col">
+          <CardHeader className="p-0 pb-2">
+            <CardTitle className="line-clamp-2 text-xl font-bold text-blue-700">
+              {content.title ?? "Untitled Link"}
+            </CardTitle>
+            {content.siteName && (
+              <CardDescription className="mt-1 flex items-center gap-1 text-sm">
+                <span className="font-medium text-gray-600">
                   {content.siteName}
-                </CardDescription>
-              )}
-            </CardHeader>
-            <CardContent className="p-0">
-              {content.description && (
-                <p className="mb-2 line-clamp-3 text-sm text-gray-700 dark:text-gray-300">
-                  {content.description}
-                </p>
-              )}
-              <div className="mt-auto text-xs text-gray-500">
-                {formatDate(item.createdAt)} • {item.type}
+                </span>
+                {content.siteName === "YouTube" && (
+                  <YouTubeLogo size={30} className="ml-1" />
+                )}
+              </CardDescription>
+            )}
+          </CardHeader>
+
+          <CardContent className="flex-grow p-0 py-2">
+            {content.description && (
+              <p className="mb-3 line-clamp-3 text-sm text-gray-700 dark:text-gray-300">
+                {content.description}
+              </p>
+            )}
+            {content.image && (
+              <img
+                src={content.image || "/placeholder.svg"}
+                alt={content.title ?? "Link image"}
+                className={`h-full w-full rounded-lg object-cover transition-transform duration-500`}
+              />
+            )}
+          </CardContent>
+
+          <CardFooter className="mt-auto flex items-center justify-between p-0 pt-2">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <Clock size={14} />
+              <span>{formatRelativeTime(item.createdAt)}</span>
+            </div>
+
+            {item.tags && item.tags.length > 0 && (
+              <div className="flex gap-1 overflow-hidden">
+                {item.tags.slice(0, 2).map((tag, index) => (
+                  <Badge key={index} variant="neutral" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+                {item.tags.length > 2 && (
+                  <Badge variant="neutral" className="text-xs">
+                    +{item.tags.length - 2}
+                  </Badge>
+                )}
               </div>
-            </CardContent>
-          </div>
+            )}
+          </CardFooter>
         </div>
       </Link>
     </Card>
@@ -135,72 +185,40 @@ function LinkCard({ item }: { item: ContentItemProps }) {
 
 function TweetCard({ item }: { item: ContentItemProps }) {
   const content = item.content as TweetContent;
-  const tweetImageUrl = content.photoUrls?.[0];
 
-  return (
-    <Card className="w-full overflow-hidden transition-shadow hover:shadow-md">
-      <Link href={content.originalUrl} target="_blank" className="block h-full">
-        <div className="p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 text-white">
-              <span className="text-xs font-bold">@</span>
-            </div>
-            <div>
-              <p className="font-semibold">
-                {content.authorName ?? "Unknown Author"}
-              </p>
-              <p className="text-xs text-gray-500">
-                @{content.authorUsername ?? "unknown"}
-              </p>
-            </div>
-          </div>
-
-          <p className="mb-3 text-sm">{content.text}</p>
-
-          {content.hasMedia && tweetImageUrl && (
-            <div className="relative mb-3 h-40 overflow-hidden rounded-md">
-              <img
-                src={tweetImageUrl}
-                alt="Tweet media"
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span>{formatDate(content.createdAt)}</span>
-            {content.favoriteCount !== undefined && (
-              <span>♥ {content.favoriteCount}</span>
-            )}
-            {content.conversationCount !== undefined && (
-              <span>💬 {content.conversationCount}</span>
-            )}
-          </div>
-        </div>
-      </Link>
-    </Card>
-  );
+  return <ClientTweetCard id={content.tweetId} />;
 }
 
 function NoteCard({ item }: { item: ContentItemProps }) {
   const content = item.content as NoteContent;
 
+  const contentPreview = content.content ?? content.text ?? "";
+
   return (
-    <Card className="w-full transition-shadow hover:shadow-md">
-      <CardHeader>
-        <CardTitle className="text-lg font-bold">
+    <Card className="flex size-full max-w-lg flex-col gap-2 overflow-hidden rounded-lg border bg-transparent p-4 backdrop-blur-md">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-xl font-bold text-amber-700">
           {content.title ?? "Untitled Note"}
         </CardTitle>
-        <CardDescription className="text-sm text-zinc-800">
-          {formatDate(item.createdAt)}
+        <CardDescription className="flex items-center gap-1 text-sm text-gray-500">
+          <Clock size={14} />
+          <span>{formatRelativeTime(item.createdAt)}</span>
+
+          {item.tags && item.tags.length > 0 && (
+            <>
+              <span className="mx-1">•</span>
+              <Tag size={14} />
+              <span>{item.tags.length} tags</span>
+            </>
+          )}
         </CardDescription>
       </CardHeader>
+
       <DialogBox
         title={content.title ?? "Untitled Note"}
-        description=""
+        description={`Created on ${formatDate(item.createdAt)}`}
         content={
-          <ScrollArea className="h-[60vh] w-full rounded-base border-2 border-border bg-main p-4 text-mtext shadow-shadow">
+          <ScrollArea className="h-[60vh] w-full rounded-lg border border-gray-200 bg-white p-6 text-gray-800 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
             <div className="prose prose-sm dark:prose-invert max-w-none">
               {content.content ?? content.text}
             </div>
@@ -208,12 +226,26 @@ function NoteCard({ item }: { item: ContentItemProps }) {
         }
       >
         <CardContent>
-          <ScrollArea className="h-[100px] w-full rounded-base border-2 border-border bg-main p-2 text-mtext shadow-shadow">
-            <p className="line-clamp-5 text-sm">
-              {content.content ?? content.text}
-            </p>
-          </ScrollArea>
+          <div className="relative">
+            <ScrollArea className="h-[120px] w-full rounded-lg border border-gray-200 bg-amber-50/50 p-4 text-gray-800">
+              <p className="text-sm leading-relaxed">{contentPreview}</p>
+            </ScrollArea>
+          </div>
         </CardContent>
+
+        <CardFooter className="flex justify-end gap-2 pt-2">
+          {/* <Button variant="default" size="sm" className="gap-1 text-xs">
+            <Bookmark size={14} />
+            Save
+          </Button>
+          <Button variant="default" size="sm" className="gap-1 text-xs">
+            <Share2 size={14} />
+            Share
+          </Button> */}
+          <Button size="sm" className="bg-amber-500 text-xs hover:bg-amber-600">
+            Read More
+          </Button>
+        </CardFooter>
       </DialogBox>
     </Card>
   );
@@ -221,15 +253,23 @@ function NoteCard({ item }: { item: ContentItemProps }) {
 
 function DefaultCard({ item }: { item: ContentItemProps }) {
   return (
-    <Card className="w-full transition-shadow hover:shadow-md">
+    <Card className="w-full border-l-4 border-l-purple-500 transition-all duration-300 hover:shadow-lg">
       <CardHeader>
-        <CardTitle className="text-lg">Unknown Content Type</CardTitle>
-        <CardDescription>Type: {item.type}</CardDescription>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <div className="rounded-full bg-purple-100 p-1.5 text-purple-700">
+            <FileText size={16} />
+          </div>
+          Unknown Content Type: {item.type}
+        </CardTitle>
+        <CardDescription className="flex items-center gap-1 text-sm">
+          <Calendar size={14} />
+          <span>{formatDate(item.createdAt)}</span>
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <pre className="overflow-auto rounded bg-gray-100 p-2 text-xs dark:bg-gray-800">
-          {JSON.stringify(item.content, null, 2)}
-        </pre>
+        <ScrollArea className="h-[150px] w-full rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-xs">
+          <pre>{JSON.stringify(item.content, null, 2)}</pre>
+        </ScrollArea>
       </CardContent>
     </Card>
   );

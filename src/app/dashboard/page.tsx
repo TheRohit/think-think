@@ -2,10 +2,11 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import InputField from "~/components/input-field";
 
+import ContentMasonry from "~/components/content-masonary";
 import { auth } from "~/lib/auth";
 import { getContentByUserId } from "~/server/db/queries";
 import IngestModal from "../components/ingest/ingest-modal";
-import ContentCard from "~/components/content-card";
+import { ContentItem } from "~/types/dashboard.types";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -24,7 +25,6 @@ export default async function Dashboard() {
   }
 
   const data = await getContentByUserId(session.user.id);
-
   return (
     <div className="flex w-full flex-col items-center gap-28 px-4 py-24 sm:px-6 sm:py-12">
       <div className="flex w-full flex-col items-center gap-8">
@@ -37,17 +37,8 @@ export default async function Dashboard() {
         <InputField />
         <IngestModal />
 
-        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data.map((item) => (
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            <ContentCard key={item.id} item={item} />
-          ))}
-        </div>
+        <ContentMasonry data={data as ContentItem[]} />
       </div>
-      {/* <div className="w-full">
-        <NotesSection />
-      </div> */}
     </div>
   );
 }
