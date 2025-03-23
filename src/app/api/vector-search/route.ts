@@ -10,7 +10,6 @@ const querySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate the user
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json(
@@ -19,7 +18,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
     const body = (await request.json()) as unknown;
     const result = querySchema.safeParse(body);
 
@@ -33,7 +31,6 @@ export async function POST(request: NextRequest) {
     const { query, limit } = result.data;
     const userId = session.user.id;
 
-    // Create embeddings using Pinecone
     const model = "multilingual-e5-large";
     const embeddings = await pinecone.inference.embed(model, [query], {
       inputType: "query",
@@ -46,7 +43,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Query the vector database
     const index = pinecone.index("multilingual-e5-large");
     const queryResponse = await index.query({
       topK: limit,
@@ -58,17 +54,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Format and return results
-    const results = queryResponse.matches.map((match) => ({
-      id: match.id,
-      score: match.score,
-      metadata: match.metadata,
-    }));
+    // Filter results to include only those with high confidence scores
+    // Adjust the threshold value based on your specific needs
+    const confidenceThreshold = 0.75; // Example threshold - adjust as needed
+    const results = queryResponse.matches
+      .filter((match) => (match.score ?? 0) >= confidenceThreshold)
+      .map((match) => ({
+        id: match.id,
+        score: match.score,
+        metadata: match.metadata,
+      }));
 
     return NextResponse.json({
       success: true,
       results,
       total: results.length,
+      threshold: confidenceThreshold, // Optionally include the threshold used
     });
   } catch (error) {
     console.error("Error querying vector database:", error);
