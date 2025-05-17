@@ -16,6 +16,14 @@ const config = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/wassup/:match*",
+        destination: "https://mind-cache.rohitm.dev/_vercel/insights/:match*",
+      },
+    ];
+  },
   experimental: {
     reactCompiler: true,
   },

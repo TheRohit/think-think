@@ -6,6 +6,7 @@ import { type Metadata } from "next";
 import { Toaster } from "~/components/ui/toaster";
 import { ThemeProvider } from "./components/theme-provider";
 import Providers from "./providers";
+import CustomAnalytics from "~/components/analytics";
 
 export const metadata: Metadata = {
   title: "MindCache",
@@ -33,6 +34,7 @@ export default function RootLayout({
             <Toaster />
             <div className="grid h-screen grid-rows-[auto,1fr] font-[family-name:var(--font-geist-sans)]">
               {children}
+              <CustomAnalytics />
             </div>
           </Providers>
         </ThemeProvider>
